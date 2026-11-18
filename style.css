@@ -7073,3 +7073,120 @@ body.ggc-footer-mode .site-header {
     font-size: 15px;
   }
 }
+@media (max-width: 700px) {
+  #home .hero-artwork {
+    margin-top: 40px;
+  }
+
+  #home .hero-artwork-stage {
+    width: 108%;
+    margin-inline: -4%;
+  }
+}
+@media (max-width: 700px) {
+  #home .hero-artwork {
+    margin-top: 40px;
+  }
+
+  #home .hero-artwork-stage {
+    width: 120%;
+    margin-inline: -10%;
+  }
+}
+@media (max-width: 700px) {
+  #home .hero-artwork {
+    margin-top: 40px;
+  }
+
+  #home .hero-artwork-stage {
+    width: 140%;
+    margin-inline: -20%;
+  }
+}
+@media (max-width: 700px) {
+  #home .hero-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 28px;
+    padding-top: 24px;
+  }
+
+  #home .hero-content > .hero-title,
+  #home .hero-content > .hero-description,
+  #home .hero-content > .hero-explore-btn {
+    margin-block: 0 !important;
+  }
+
+  #home .hero-artwork {
+    margin-top: 12px;
+  }
+}
+@media (max-width: 700px) {
+  #home .hero-content {
+    padding-top: 48px;
+  }
+}
+@media (max-width: 700px) {
+  #home .hero-content {
+    padding-top: 64px;
+  }
+}
+@media (max-width: 700px) {
+  #home .hero-content {
+    padding-top: 88px;
+  }
+}
+@media (max-width: 700px) {
+  #about .about-chapter-strip {
+    height: clamp(170px, 38vw, 230px);
+  }
+
+  #about .about-chapter-strip
+  > .about-chapter-panel[aria-pressed="true"] {
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+
+  #about .about-chapter-panel[aria-pressed="true"] .who-we-are-motion {
+    object-fit: contain;
+    object-position: center;
+  }
+}
+@media (max-width: 700px) {
+  #about .about-chapter-nav {
+    margin-inline: -10px;
+    column-gap: 8px;
+  }
+
+  #about .about-chapter-strip {
+    height: clamp(210px, 46vw, 280px);
+    gap: 4px;
+  }
+
+  #about .about-chapter-strip
+  > .about-chapter-panel[aria-pressed="false"] {
+    flex-basis: clamp(22px, 4.5vw, 27px);
+    padding-inline: 0;
+  }
+
+  #about .about-chapter-panel[aria-pressed="false"] .about-chapter-number {
+    flex-basis: 18px;
+    height: 18px;
+    font-size: 9px;
+  }
+}
+@media (max-width: 700px) {
+  #home .hero-content {
+    padding-top: 140px !important;
+  }
+}
+@media (max-width: 700px) {
+  #home .hero-title {
+    font-size: clamp(42px, 9vw, 54px) !important;
+    line-height: 1.1;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
