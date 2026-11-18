@@ -1,261 +1,3 @@
-
-// GOOGLE GENESIS CLUB - JAVASCRIPT
-
-// Select all navigation links
-const navLinks = document.querySelectorAll(".nav-link");
-
-// Function to update the active link
-function setActiveLink(activeLink) {
-
-    navLinks.forEach((link) => {
-        link.classList.remove("active");
-
-        link.removeAttribute("aria-current");
-    });
-
-    activeLink.classList.add("active");
-    activeLink.setAttribute("aria-current", "page");
-}
-
-// Add click events
-navLinks.forEach((link) => {
-
-    link.addEventListener("click", () => {
-        setActiveLink(link);
-    });
-
-});
-
-// Highlight the correct link when opening a URL
-const currentHash = window.location.hash;
-
-const matchingLink = Array.from(navLinks).find(
-    (link) => link.getAttribute("href") === currentHash
-);
-
-if (matchingLink) {
-    setActiveLink(matchingLink);
-} else {
-    setActiveLink(navLinks[0]);
-}
-
-// Confirmation message
-console.log("GGC Website Loaded Successfully!");
-
-/* =========================================
-   GGC - CONTINUOUS SHALLOW WATER CAUSTICS
-   ========================================= */
-
-(() => {
-    const canvas = document.getElementById("google-liquid");
-    const hero = document.querySelector(".hero");
-
-    if (!canvas || !hero) return;
-
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    const reducedMotion = window.matchMedia(
-        "(prefers-reduced-motion: reduce)"
-    );
-
-    let width = 0;
-    let height = 0;
-    let animationId = null;
-    let startTime = null;
-
-    function resize() {
-        const rect = hero.getBoundingClientRect();
-        const dpr = Math.min(window.devicePixelRatio || 1, 2);
-
-        width = rect.width;
-        height = rect.height;
-
-        canvas.width = Math.round(width * dpr);
-        canvas.height = Math.round(height * dpr);
-
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    }
-
-    function render(timestamp) {
-        if (startTime === null) startTime = timestamp;
-
-        const time = (timestamp - startTime) * 0.00018;
-
-        ctx.clearRect(0, 0, width, height);
-
-        // Soft silver water base
-        const base = ctx.createLinearGradient(
-            0, 0, width, height
-        );
-
-        base.addColorStop(0, "#ffffff");
-        base.addColorStop(0.5, "#f3f5f7");
-        base.addColorStop(1, "#ffffff");
-
-        ctx.fillStyle = base;
-        ctx.fillRect(0, 0, width, height);
-
-        // Layered flowing water reflections
-        const spacing = 24;
-        const layers = 3;
-
-        for (let layer = 0; layer < layers; layer++) {
-            const offset = layer * 9;
-
-            for (
-                let y = -40;
-                y < height + 40;
-                y += spacing
-            ) {
-                ctx.beginPath();
-
-                for (let x = -20; x <= width + 20; x += 5) {
-                    const wave1 = Math.sin(
-                        x * 0.012 +
-                        y * 0.016 +
-                        time * (1.1 + layer * 0.2)
-                    );
-
-                    const wave2 = Math.sin(
-                        x * 0.026 -
-                        y * 0.011 -
-                        time * 0.8
-                    );
-
-                    const wave3 = Math.cos(
-                        x * 0.007 +
-                        y * 0.024 +
-                        time * 0.65
-                    );
-
-                    const displacement =
-                        wave1 * 9 +
-                        wave2 * 5 +
-                        wave3 * 6;
-
-                    const newY =
-                        y + displacement + offset;
-
-                    if (x === -20) {
-                        ctx.moveTo(x, newY);
-                    } else {
-                        ctx.lineTo(x, newY);
-                    }
-                }
-
-                ctx.strokeStyle =
-                    layer === 0
-                        ? "rgba(145,155,170,0.12)"
-                        : layer === 1
-                        ? "rgba(190,198,210,0.16)"
-                        : "rgba(255,255,255,0.55)";
-
-                ctx.lineWidth =
-                    layer === 2 ? 2.5 : 1.5;
-
-                ctx.stroke();
-            }
-        }
-
-        animationId = requestAnimationFrame(render);
-    }
-
-    resize();
-
-    if (!reducedMotion.matches) {
-        animationId = requestAnimationFrame(render);
-    }
-
-    window.addEventListener("resize", resize);
-
-    document.addEventListener(
-        "visibilitychange",
-        () => {
-            if (document.hidden && animationId !== null) {
-                cancelAnimationFrame(animationId);
-                animationId = null;
-            } else if (
-                !document.hidden &&
-                animationId === null &&
-                !reducedMotion.matches
-            ) {
-                animationId = requestAnimationFrame(render);
-            }
-        }
-    );
-})();
-
-document.addEventListener("DOMContentLoaded", () => {
-
-    const navLinks = document.querySelectorAll(
-        ".nav-link[href^='#']"
-    );
-
-    const sections = [...navLinks]
-        .map(link => document.querySelector(
-            link.getAttribute("href")
-        ))
-        .filter(Boolean);
-
-    function setActiveSection(id) {
-        navLinks.forEach(link => {
-            const isActive =
-                link.getAttribute("href") === `#${id}`;
-
-            link.classList.toggle("active", isActive);
-
-            if (isActive) {
-                link.setAttribute("aria-current", "location");
-            } else {
-                link.removeAttribute("aria-current");
-            }
-        });
-    }
-
-    // Update immediately when a navigation link is clicked
-    navLinks.forEach(link => {
-        link.addEventListener("click", () => {
-            const id = link.getAttribute("href").slice(1);
-            setActiveSection(id);
-        });
-    });
-
-    // Update when About Us or Explore Events is clicked
-    document.querySelectorAll(
-        'a[href="#about"], a[href="#events"]'
-    ).forEach(link => {
-        link.addEventListener("click", () => {
-            const id = link.getAttribute("href").slice(1);
-            setActiveSection(id);
-        });
-    });
-
-    // Update navigation automatically while scrolling
-    const observer = new IntersectionObserver(
-        entries => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    setActiveSection(entry.target.id);
-                }
-            });
-        },
-        {
-            rootMargin: "-25% 0px -60% 0px",
-            threshold: 0
-        }
-    );
-
-    sections.forEach(section => observer.observe(section));
-
-    // Highlight current section on page load
-    const initialId = window.location.hash.slice(1) || "home";
-
-    if (sections.some(section => section.id === initialId)) {
-        setActiveSection(initialId);
-    }
-});
-
 /* GGC INTRO — NAVBAR APPEARS WITH HOME (NO EXTRA WAIT) */
 document.addEventListener("DOMContentLoaded", () => {
     const intro = document.getElementById("ggc-intro");
@@ -285,98 +27,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
-/* =====================================
-   GGC — iOS SMOOTH SECTION REVEALS
-===================================== */
-
-document.addEventListener("DOMContentLoaded", () => {
-
-    const reducedMotion = window.matchMedia(
-        "(prefers-reduced-motion: reduce)"
-    ).matches;
-
-    if (reducedMotion) return;
-
-    const elements = document.querySelectorAll(
-        "#about, #events, #team"
-    );
-
-    if (!("IntersectionObserver" in window)) return;
-
-    const observer = new IntersectionObserver(
-        (entries) => {
-            entries.forEach((entry) => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add("ios-visible");
-                    observer.unobserve(entry.target);
-                }
-            });
-        },
-        {
-            threshold: 0.08,
-            rootMargin: "0px 0px -30px 0px"
-        }
-    );
-
-    elements.forEach((element) => {
-        element.classList.add("ios-reveal");
-        observer.observe(element);
-    });
-
-});
-
-
-/* GGC — REPLAY MEMBER PEEK ON SCROLL */
-
-document.addEventListener("DOMContentLoaded", () => {
-    const aboutSection = document.querySelector(".about-section");
-
-    if (!aboutSection) return;
-
-    const observer = new IntersectionObserver(
-        (entries) => {
-            entries.forEach((entry) => {
-                aboutSection.classList.toggle(
-                    "peek-active",
-                    entry.isIntersecting
-                );
-            });
-        },
-        {
-            threshold: 0.2
-        }
-    );
-
-    observer.observe(aboutSection);
-});
-
-/* GGC — Smooth scroll reveal */
-
-const revealSections = document.querySelectorAll(
-    "#about, #events, #team"
-);
-
-if ("IntersectionObserver" in window) {
-    const revealObserver = new IntersectionObserver(
-        (entries, observer) => {
-            entries.forEach((entry) => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add("is-visible");
-                    observer.unobserve(entry.target);
-                }
-            });
-        },
-        {
-            threshold: 0.08,
-            rootMargin: "0px 0px 40px 0px"
-        }
-    );
-
-    revealSections.forEach((section) => {
-        section.classList.add("scroll-reveal");
-        revealObserver.observe(section);
-    });
-}
 
 /* ===================================
    GGC — BUTTERY SMOOTH SCROLL
@@ -387,19 +37,16 @@ if (
     !window.matchMedia("(prefers-reduced-motion: reduce)").matches
 ) {
     const lenis = new Lenis({
-        
+
         duration: 1.25,
         easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
         smoothWheel: true,
         wheelMultiplier: 0.9,
         touchMultiplier: 1.0,
-        prevent: (node) => Boolean(node.closest?.(".ggc-exp-dialog")),
         anchors: {
             offset: -100
         }
     });
-
-    window.ggcLenis = lenis;
 
     function raf(time) {
         lenis.raf(time);
@@ -409,200 +56,6 @@ if (
     requestAnimationFrame(raf);
 }
 
-/* GGC — SMOOTH NAVBAR SECTION SCROLL */
-
-document.querySelectorAll('.nav-link[href^="#"]').forEach(link => {
-    link.addEventListener("click", (e) => {
-        const target = document.querySelector(
-            link.getAttribute("href")
-        );
-
-        if (!target) return;
-
-        e.preventDefault();
-
-        if (typeof lenis !== "undefined") {
-            lenis.scrollTo(target, {
-                duration: 2.0,
-                offset: 0,
-                easing: (t) =>
-                    1 - Math.pow(1 - t, 4)
-            });
-        } else {
-            target.scrollIntoView({
-                behavior: "smooth",
-                block: "start"
-            });
-        }
-    });
-});
-
-
-
-
-/* ==========================================
-   GGC EVENTS — 3-CARD CAROUSEL
-   ========================================== */
-
-(() => {
-    const stage = document.getElementById("eventsStage");
-    if (!stage) return;
-
-    const cards = Array.from(
-        stage.querySelectorAll(".event-frame")
-    );
-
-    if (cards.length !== 3) return;
-
-    const prevButton = document.getElementById("eventPrev");
-    const nextButton = document.getElementById("eventNext");
-    const counter = document.getElementById("eventsCounter");
-
-    const dots = Array.from(
-        document.querySelectorAll(
-            "#events .event-progress-dot"
-        )
-    );
-
-    // Start with SOC Operations Workshop in center.
-    let activeIndex = 2;
-
-    function renderCarousel() {
-        cards.forEach((card, index) => {
-            card.classList.remove(
-                "left",
-                "center",
-                "right"
-            );
-
-            if (index === activeIndex) {
-                card.classList.add("center");
-            } else if (
-                index === (activeIndex + 1) % cards.length
-            ) {
-                card.classList.add("right");
-            } else {
-                card.classList.add("left");
-            }
-
-            card.setAttribute(
-                "aria-label",
-                index === activeIndex
-                    ? "Selected event"
-                    : "Select this event"
-            );
-        });
-
-        if (counter) {
-            counter.textContent =
-                String(activeIndex + 1).padStart(2, "0") +
-                " / " +
-                String(cards.length).padStart(2, "0");
-        }
-
-        dots.forEach((dot, index) => {
-            dot.classList.toggle(
-                "active",
-                index === activeIndex
-            );
-        });
-    }
-
-    function goTo(index) {
-        activeIndex =
-            (index + cards.length) % cards.length;
-
-        renderCarousel();
-    }
-
-    cards.forEach((card, index) => {
-        card.addEventListener("click", () => {
-            if (index !== activeIndex) {
-                goTo(index);
-            }
-        });
-
-        card.addEventListener("keydown", (event) => {
-            if (
-                event.key === "Enter" ||
-                event.key === " "
-            ) {
-                if (index !== activeIndex) {
-                    event.preventDefault();
-                    goTo(index);
-                }
-            }
-        });
-    });
-
-    prevButton?.addEventListener("click", () => {
-        goTo(activeIndex - 1);
-    });
-
-    nextButton?.addEventListener("click", () => {
-        goTo(activeIndex + 1);
-    });
-
-    dots.forEach((dot, index) => {
-        dot.addEventListener("click", () => {
-            goTo(index);
-        });
-    });
-
-    renderCarousel();
-})();
-
-/* GOOGLE GENESIS CLUB — LETTER-BY-LETTER GLIDE */
-
-document.addEventListener("DOMContentLoaded", () => {
-    const title = document.querySelector("#home .hero-title");
-    if (!title || title.dataset.lettersReady === "true") return;
-
-    title.dataset.lettersReady = "true";
-
-    const googleLetters = title.querySelectorAll(".google-letter");
-
-    // Animate existing colored Google letters
-    googleLetters.forEach((letter, index) => {
-        letter.classList.add("glide-letter");
-        letter.style.setProperty(
-            "--letter-delay",
-            `${index * 85}ms`
-        );
-    });
-
-    // Split "Genesis Club" into individual letters
-    const genesis = title.querySelector(".genesis-title");
-
-    if (genesis) {
-        const text = genesis.textContent.trim();
-        genesis.textContent = "";
-
-        const fragment = document.createDocumentFragment();
-
-        [...text].forEach((character, index) => {
-            if (character === " ") {
-                fragment.appendChild(
-                    document.createTextNode("\u00A0")
-                );
-                return;
-            }
-
-            const span = document.createElement("span");
-            span.className = "glide-letter";
-            span.textContent = character;
-
-            span.style.setProperty(
-                "--letter-delay",
-                `${(index + googleLetters.length) * 85}ms`
-            );
-
-            fragment.appendChild(span);
-        });
-
-        genesis.appendChild(fragment);
-    }
-});
 
 /* GOOGLE GENESIS CLUB — LETTER REVEAL */
 
@@ -629,17 +82,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Split Genesis Club into individual letters
     if (genesis && !genesis.dataset.split) {
-        const text = genesis.textContent.trim();
+        const text = genesis.textContent.trim().replaceAll(" ", "\u00A0");
         genesis.textContent = "";
 
         for (const char of text) {
-            if (char === " ") {
-                const space = document.createElement("span");
-                space.textContent = "\u00A0";
-                genesis.appendChild(space);
-                continue;
-            }
-
             const span = document.createElement("span");
             span.className = "glide-letter";
             span.textContent = char;
@@ -657,815 +103,770 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
-/* =========================================
-   GGC TITLE — SEQUENTIAL LETTER ANIMATION
-   ========================================= */
-
-(function () {
-    function initTitleAnimation() {
-        const title = document.querySelector(
-            "#home .hero-title"
-        );
-
-        if (!title) return;
-
-        const letters = title.querySelectorAll(
-            ".google-letter, " +
-            ".genesis-title > span:not(.title-space)"
-        );
-
-        letters.forEach((letter, index) => {
-            letter.style.setProperty(
-                "--delay",
-                `${index * 100}ms`
-            );
-        });
-
-        // Allow the intro screen to finish first.
-        const intro = document.getElementById("ggc-intro");
-
-        function start() {
-            if (title.classList.contains("start-letters")) {
-                return;
-            }
-
-            title.classList.add("start-letters");
-        }
-
-        if (!intro) {
-            start();
-            return;
-        }
-
-        // Wait for the intro to disappear.
-        const observer = new MutationObserver(() => {
-            const style = getComputedStyle(intro);
-
-            if (
-                style.display === "none" ||
-                style.visibility === "hidden" ||
-                Number(style.opacity) === 0
-            ) {
-                observer.disconnect();
-                start();
-            }
-        });
-
-        observer.observe(intro, {
-            attributes: true,
-            attributeFilter: ["class", "style"]
-        });
-
-        // Fallback if intro code uses a different hiding method.
-        setTimeout(() => {
-            observer.disconnect();
-            start();
-        }, 3000);
-    }
-
-    if (document.readyState === "loading") {
-        document.addEventListener(
-            "DOMContentLoaded",
-            initTitleAnimation
-        );
-    } else {
-        initTitleAnimation();
-    }
-})();
-
-/* GGC — THREE EVENT STACKED CAROUSEL */
-
-(function () {
-    function init() {
-        const stage = document.getElementById("eventsStage");
-        if (!stage) return;
-
-        const cards = [...stage.querySelectorAll(".event-frame")];
-
-        if (cards.length !== 3) {
-            console.warn("Expected 3 event cards, found:", cards.length);
-            return;
-        }
-
-        let active = 2; // SOC Operations starts in front
-
-        function render() {
-            cards.forEach((card, index) => {
-                const relative =
-                    (index - active + cards.length) % cards.length;
-
-                card.dataset.position =
-                    relative === 0 ? "center" :
-                    relative === 1 ? "right" : "left";
-
-                card.setAttribute(
-                    "aria-current",
-                    index === active ? "true" : "false"
-                );
-            });
-
-            const dots = document.querySelectorAll(
-                "#events .event-progress-dot"
-            );
-
-            dots.forEach((dot, index) => {
-                dot.classList.toggle("active", index === active);
-            });
-        }
-
-        cards.forEach((card, index) => {
-            card.addEventListener("click", () => {
-                if (index === active) return;
-
-                active = index;
-                render();
-            });
-
-            card.addEventListener("keydown", event => {
-                if (event.key === "Enter" || event.key === " ") {
-                    event.preventDefault();
-                    active = index;
-                    render();
-                }
-            });
-        });
-
-        render();
-    }
-
-    if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", init);
-    } else {
-        init();
-    }
-})();
-
-/* ==========================================
-   GGC EVENTS — SMOOTH CENTER SLIDING
-   ========================================== */
-
-(() => {
-    function initSlidingEvents() {
-        const stage = document.getElementById("eventsStage");
-        if (!stage) return;
-
-        if (stage.dataset.slidingReady === "true") return;
-
-        const cards = [
-            ...stage.querySelectorAll(".event-frame")
-        ];
-
-        if (cards.length !== 3) return;
-
-        stage.dataset.slidingReady = "true";
-
-        const dots = [
-            ...document.querySelectorAll(
-                "#events .event-progress-dot"
-            )
-        ];
-
-        // SOC Operations starts in the center
-        let active = 2;
-
-        function render() {
-            cards.forEach((card, index) => {
-                const offset =
-                    (index - active + cards.length) % cards.length;
-
-                card.dataset.position =
-                    offset === 0 ? "center" :
-                    offset === 1 ? "right" : "left";
-
-                card.setAttribute(
-                    "aria-current",
-                    index === active ? "true" : "false"
-                );
-            });
-
-            dots.forEach((dot, index) => {
-                dot.classList.toggle(
-                    "active",
-                    index === active
-                );
-            });
-        }
-
-        function select(index) {
-            if (index === active) return;
-
-            active = index;
-            render();
-        }
-
-        cards.forEach((card, index) => {
-            card.addEventListener("click", event => {
-                if (index !== active) {
-                    event.preventDefault();
-                    select(index);
-                }
-            });
-
-            card.addEventListener("keydown", event => {
-                if (
-                    event.key === "Enter" ||
-                    event.key === " "
-                ) {
-                    event.preventDefault();
-                    select(index);
-                }
-            });
-        });
-
-        dots.forEach((dot, index) => {
-            dot.addEventListener("click", () => select(index));
-        });
-
-        render();
-    }
-
-    if (document.readyState === "loading") {
-        document.addEventListener(
-            "DOMContentLoaded",
-            initSlidingEvents
-        );
-    } else {
-        initSlidingEvents();
-    }
-})();
-
-
-/* ============================================
-   GGC EVENTS — CAROUSEL AND INSTAGRAM WINDOWS
-   ============================================ */
-
-(() => {
-  function initGGCExperiences() {
-    const section = document.querySelector(".ggc-experiences");
-    const stage = document.getElementById("ggcExpStage");
-
-    if (!section || !stage || stage.dataset.ready) return;
-    stage.dataset.ready = "true";
-
-    const cards = [...stage.querySelectorAll(".ggc-exp-card")];
-    const dots = [
-      ...section.querySelectorAll(".ggc-exp-pagination button")
-    ];
-
-    const carousel = document.getElementById("ggcExpCarousel");
-    const upcoming = section.querySelector(".ggc-exp-upcoming");
-    const toggleButtons = [
-      ...section.querySelectorAll("[data-exp-view]")
-    ];
-
-    let active = 1;
-
-    // Add the real Instagram post URL to each event.
-    const eventInfo = [
-      {
-        title: "Prompt Engineering with Gemini",
-        category: "MASTERCLASS",
-        date: "10 December 2025",
-        location: "Virtual Session",
-        instagram: [
-          "https://www.instagram.com/p/DOyDgYMkohC/",
-          "https://www.instagram.com/reel/DPJLCefEhqh/"
-        ],
-        description:
-          "Mastering the art of communication with Large Language Models using Google's Gemini. This masterclass explored effective prompt engineering techniques and how to interact with generative AI tools."
-      },
-      {
-        title: "Machine Learning Essentials",
-        category: "TECHNICAL SESSION",
-        date: "25 November 2025",
-        location: "Main Hall",
-        instagram: [
-          "https://www.instagram.com/p/DSMdg-wEkwt/",
-          "https://www.instagram.com/reel/DTx3LFxksl4/?utm_source=ig_web_copy_link&dlrf=MzRlODBiNWFlZA==&srtk=MzRlODBiNWFlZA=="
-        ],
-        description:
-          "An interactive session covering Machine Learning fundamentals, Exploratory Data Analysis (EDA), supervised and unsupervised learning, model evaluation, hyperparameter tuning, and hands-on model deployment."
-      },
-      {
-        title: "Student Skills Enrichment Workshop on SOC Operations",
-        category: "CYBERSECURITY WORKSHOP",
-        date: "27 August 2026",
-        location: "Data Science Lab",
-        instagram: [
-          "https://www.instagram.com/p/DfoTcnDy1Ax/",
-          "https://www.instagram.com/p/DfoUJ85krwi/"
-        ],
-        description:
-          "An immersive cybersecurity workshop featuring SOC job simulation, cybersecurity career exploration, cyber certification guidance, hands-on security tools demonstrations, and security alert investigation. Speakers: Kaushik Srinivasan and Siva Sagar."
-      }
-    ];
-
-    function render() {
-      cards.forEach((card, index) => {
-        const offset =
-          (index - active + cards.length) % cards.length;
-
-        card.dataset.expPosition =
-          offset === 0 ? "center" :
-          offset === 1 ? "right" : "left";
-
-        card.setAttribute(
-          "aria-current",
-          index === active ? "true" : "false"
-        );
-      });
-
-      dots.forEach((dot, index) => {
-        dot.classList.toggle("active", index === active);
-
-        if (eventInfo[index]) {
-          dot.setAttribute(
-            "aria-label",
-            `Show ${eventInfo[index].title}`
-          );
-        }
-      });
-    }
-
-    function select(index) {
-      active = (index + cards.length) % cards.length;
-      render();
-    }
-
-    // Create one reusable popup.
-    const dialog = document.createElement("dialog");
-    dialog.className = "ggc-exp-dialog";
-    dialog.setAttribute("aria-label", "Event details");
-    document.body.appendChild(dialog);
-
-    // Convert a normal Instagram link to an embed URL.
-    function instagramEmbedUrl(url) {
-      if (!url) return null;
-
-      try {
-        const parsed = new URL(url);
-
-        if (
-          !["www.instagram.com", "instagram.com"].includes(
-            parsed.hostname
-          )
-        ) {
-          return null;
-        }
-
-        const match = parsed.pathname.match(
-          /^\/(p|reel)\/([A-Za-z0-9_-]+)/
-        );
-
-        return match
-          ? `https://www.instagram.com/${match[1]}/${match[2]}/embed/`
-          : null;
-      } catch {
-        return null;
-      }
-    }
-
-    function openEvent(index) {
-      const info = eventInfo[index];
-      if (!info) return;
-
-      dialog.replaceChildren();
-      dialog.classList.toggle("ggc-exp-dialog--two-posts", Array.isArray(info.instagram) && info.instagram.length === 2);
-
-      // Close button
-      const close = document.createElement("button");
-      close.className = "ggc-exp-dialog-close";
-      close.type = "button";
-      close.textContent = "×";
-      close.setAttribute("aria-label", "Close event details");
-
-      // Instagram post section
-      const hero = document.createElement("div");
-      hero.className = "ggc-exp-dialog-hero";
-
-      const posts = (Array.isArray(info.instagram)
-        ? info.instagram
-        : [info.instagram])
-        .map(instagramEmbedUrl)
-        .filter(Boolean);
-
-      if (posts.length > 0) {
-        const grid = document.createElement("div");
-        grid.className = "ggc-instagram-grid";
-
-        posts.forEach((embedUrl, postIndex) => {
-          const tile = document.createElement("div");
-          tile.className = "ggc-instagram-grid-item";
-
-          const iframe = document.createElement("iframe");
-          iframe.src = embedUrl;
-          iframe.title = `${info.title} Instagram ${embedUrl.includes("/reel/") ? "reel" : "post"} ${postIndex + 1} of ${posts.length}`;
-          iframe.loading = "lazy";
-          iframe.setAttribute("scrolling", "no");
-          iframe.setAttribute("tabindex", "-1");
-          iframe.setAttribute("allowtransparency", "true");
-          // Embedded Instagram pages have their own scrollbars. Disable
-          // interaction and scale the WHOLE iframe, not merely crop it.
-          iframe.style.pointerEvents = "none";
-
-          tile.appendChild(iframe);
-
-          // Transparent, keyboard-accessible link above the non-interactive
-          // Instagram embed. Opens the original post or reel in a new tab.
-          const instagramLink = document.createElement("a");
-          instagramLink.className = "ggc-instagram-clickable";
-          instagramLink.href = embedUrl.replace(/\/embed\/?$/, "/");
-          instagramLink.target = "_blank";
-          instagramLink.rel = "noopener noreferrer";
-          instagramLink.setAttribute("aria-label", `Open ${info.title} Instagram ${embedUrl.includes("/reel/") ? "reel" : "post"} ${postIndex + 1} in a new tab`);
-          tile.appendChild(instagramLink);
-          grid.appendChild(tile);
-        });
-        hero.appendChild(grid);
-      } else {
-        const placeholder = document.createElement("div");
-        placeholder.className = "ggc-instagram-placeholder";
-        const name = document.createElement("span");
-        name.textContent = "Instagram";
-        const message = document.createElement("p");
-        message.textContent = "Event post coming soon";
-        placeholder.append(name, message);
-        hero.appendChild(placeholder);
-      }
-
-      // Event information
-      const body = document.createElement("div");
-      body.className = "ggc-exp-dialog-body";
-
-      const category = document.createElement("p");
-      category.className = "ggc-exp-dialog-category";
-      category.textContent = info.category;
-
-      const heading = document.createElement("h2");
-      heading.id = "ggc-exp-dialog-title";
-      heading.textContent = info.title;
-
-      dialog.setAttribute("aria-labelledby", heading.id);
-
-      const meta = document.createElement("div");
-      meta.className = "ggc-exp-dialog-meta";
-
-      const date = document.createElement("span");
-      date.textContent = "🗓️  " + info.date;
-
-      const location = document.createElement("span");
-      location.textContent = "📍  " + info.location;
-
-      meta.append(date, location);
-
-      const divider = document.createElement("div");
-      divider.className = "ggc-exp-dialog-divider";
-      divider.setAttribute("aria-hidden", "true");
-
-      const about = document.createElement("h3");
-      about.className = "ggc-exp-dialog-about";
-      about.textContent = "ABOUT THE EVENT";
-
-      const description = document.createElement("p");
-      description.className = "ggc-exp-dialog-description";
-      description.textContent = info.description;
-
-      const status = document.createElement("span");
-      status.className = "ggc-exp-dialog-status";
-      status.textContent = "• EVENT COMPLETED";
-
-      body.append(
-        category,
-        heading,
-        meta,
-        divider,
-        about,
-        description,
-        status
-      );
-
-      dialog.append(close, hero, body);
-
-      close.addEventListener("click", () => dialog.close());
-
-      
-if (!dialog.open) {
-  dialog.showModal();
-}
-
-document.body.classList.add("ggc-modal-open");
-      window.ggcLenis?.stop();
-      dialog.scrollTop = 0;
-
-    }
-
-    // Keep wheel/touch scrolling inside the dialog, not the page.
-    dialog.addEventListener("wheel", (event) => {
-      event.stopPropagation();
-    }, { passive: true });
-
-    dialog.addEventListener("touchmove", (event) => {
-      event.stopPropagation();
-    }, { passive: true });
-
-    dialog.addEventListener("close", () => {
-      document.body.classList.remove("ggc-modal-open");
-      window.ggcLenis?.start();
-    });
-
-    // Click outside the popup to close it.
-    dialog.addEventListener("click", (event) => {
-      if (event.target === dialog && !event.target.closest(".ggc-exp-dialog-body, .ggc-exp-dialog-hero")) {
-        // Close only when the actual dialog surface is clicked.
-        // The close button remains the reliable way to dismiss.
-        dialog.close();
-      }
-    });
-
-    // Event card interactions
-    cards.forEach((card, index) => {
-      card.addEventListener("click", (event) => {
-        if (event.target.closest(".ggc-exp-explore")) {
-          return;
-        }
-
-        if (index !== active) {
-          select(index);
-        }
-      });
-
-      card.addEventListener("keydown", (event) => {
-        if (
-          (event.key === "Enter" || event.key === " ") &&
-          event.target === card
-        ) {
-          event.preventDefault();
-
-          if (index !== active) {
-            select(index);
-          } else {
-            openEvent(Number(card.dataset.expIndex));
-          }
-        }
-      });
-
-      card.querySelector(".ggc-exp-explore")
-        ?.addEventListener("click", (event) => {
-          event.stopPropagation();
-
-          if (index !== active) {
-            select(index);
-          }
-
-          openEvent(Number(card.dataset.expIndex));
-        });
-    });
-
-    // Carousel arrows
-    section.querySelector(".ggc-exp-prev")
-      ?.addEventListener("click", () => {
-        select(active - 1);
-      });
-
-    section.querySelector(".ggc-exp-next")
-      ?.addEventListener("click", () => {
-        select(active + 1);
-      });
-
-    // Pagination dots
-    dots.forEach((dot, index) => {
-      dot.addEventListener("click", () => {
-        select(index);
-      });
-    });
-
-    // Past / Upcoming toggle
-    toggleButtons.forEach((button) => {
-      button.addEventListener("click", () => {
-        const isPast = button.dataset.expView === "past";
-
-        toggleButtons.forEach((btn) => {
-          const selected = btn === button;
-
-          btn.classList.toggle("active", selected);
-          btn.setAttribute(
-            "aria-pressed",
-            String(selected)
-          );
-        });
-
-        if (carousel) carousel.hidden = !isPast;
-        const ticket = section.querySelector(".ggc-ticket-section");
-        if (ticket) ticket.hidden = !isPast;
-        if (upcoming) upcoming.hidden = isPast;
-      });
-    });
-
-    render();
-  }
-
-  if (document.readyState === "loading") {
-    document.addEventListener(
-      "DOMContentLoaded",
-      initGGCExperiences
-    );
-  } else {
-    initGGCExperiences();
-  }
-})();
-
-/* GGC — SWITCH NAVIGATION BY SECTION */
-
-(() => {
-  function initMovingNavigation() {
-    const home = document.getElementById("home");
-    const dock = document.getElementById("ggcSideDock");
-
-    if (!home || !dock) return;
-
-    const links = [
-      ...dock.querySelectorAll(".dock-link")
-    ];
-
-    const sections = ["home", "about", "events", "team"]
-      .map(id => document.getElementById(id))
-      .filter(Boolean);
-
-    let ticking = false;
-
-    function updateNavigation() {
-      ticking = false;
-
-      // Switch after scrolling beyond the Home section
-      const homeBottom =
-        home.getBoundingClientRect().bottom;
-
-      const showDock = homeBottom <= 140;
-
-      document.body.classList.toggle(
-        "ggc-dock-mode",
-        showDock
-      );
-
-      // Highlight the section nearest the viewport top
-      let current = "home";
-
-      for (const section of sections) {
-        if (section.getBoundingClientRect().top <= 180) {
-          current = section.id;
-        }
-      }
-
-      links.forEach(link => {
-        const active = link.dataset.section === current;
-        link.classList.toggle("active", active);
-
-        if (active) {
-          link.setAttribute("aria-current", "location");
-        } else {
-          link.removeAttribute("aria-current");
-        }
-      });
-    }
-
-    function requestUpdate() {
-      if (ticking) return;
-      ticking = true;
-      requestAnimationFrame(updateNavigation);
-    }
-
-    window.addEventListener("scroll", requestUpdate, {
-      passive: true
-    });
-
-    window.addEventListener("resize", requestUpdate);
-
-    updateNavigation();
-  }
-
-  if (document.readyState === "loading") {
-    document.addEventListener(
-      "DOMContentLoaded",
-      initMovingNavigation
-    );
-  } else {
-    initMovingNavigation();
-  }
-})();
-
-/* HOME: horizontal navbar
-   ABOUT / EVENTS / TEAM: vertical dock */
-
-(() => {
+/* Update the side dock as the visitor moves through the page. */
+document.addEventListener("DOMContentLoaded", () => {
   const home = document.getElementById("home");
-  const about = document.getElementById("about");
+  const dock = document.getElementById("ggcSideDock");
+  const footer = document.getElementById("join");
+  if (!home || !dock) return;
 
-  if (!home || !about) return;
+  const links = [...dock.querySelectorAll(".dock-link[data-section]")];
+  const sections = links
+    .map(link => document.getElementById(link.dataset.section))
+    .filter(Boolean);
 
-  function updateNavbar() {
-    const aboutTop = about.getBoundingClientRect().top;
+  let updateQueued = false;
 
-    // Switch as soon as About reaches the middle
-    // of the screen.
-    const onOtherSection =
-      aboutTop <= window.innerHeight * 0.5;
+  function updateNavigation() {
+    updateQueued = false;
 
-    document.body.classList.toggle(
-      "ggc-dock-mode",
-      onOtherSection
+    const readingLine = window.innerHeight * 0.35;
+    let current = home;
+
+    for (const section of sections) {
+      if (section.getBoundingClientRect().top <= readingLine) {
+        current = section;
+      }
+    }
+
+    const dockBottom = dock.getBoundingClientRect().bottom;
+    const footerBoundary = dockBottom > 0 ? dockBottom + 12 : readingLine;
+    const atFooter = Boolean(
+      footer && footer.getBoundingClientRect().top <= footerBoundary
     );
+
+    const showDock =
+      current !== home || home.getBoundingClientRect().bottom <= 140;
+
+    document.body.classList.toggle("ggc-dock-mode", showDock);
+    document.body.classList.toggle("ggc-footer-mode", atFooter);
+
+    for (const link of links) {
+      const active = !atFooter && link.dataset.section === current.id;
+      link.classList.toggle("active", active);
+
+      if (active) {
+        link.setAttribute("aria-current", "location");
+      } else {
+        link.removeAttribute("aria-current");
+      }
+    }
   }
 
-  window.addEventListener("scroll", updateNavbar, {
-    passive: true
+  function queueUpdate() {
+    if (updateQueued) return;
+    updateQueued = true;
+    requestAnimationFrame(updateNavigation);
+  }
+
+  window.addEventListener("scroll", queueUpdate, { passive: true });
+  window.addEventListener("resize", queueUpdate);
+  window.addEventListener("pageshow", queueUpdate);
+  updateNavigation();
+});
+document.addEventListener("DOMContentLoaded", () => {
+  const artwork = document.querySelector("#home .hero-artwork");
+  if (!artwork?.querySelector(".hero-artwork-effects")) return;
+
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  if (reducedMotion.matches) return;
+
+  function playArtwork() {
+    artwork.classList.remove("is-playing");
+    void artwork.offsetWidth;
+    artwork.classList.add("is-playing");
+  }
+
+  function startWhenVisible() {
+    artwork.addEventListener("pointerenter", playArtwork);
+
+    if (!("IntersectionObserver" in window)) {
+      playArtwork();
+      return;
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+      if (!entries.some((entry) => entry.isIntersecting)) return;
+      observer.disconnect();
+      playArtwork();
+    }, { threshold: 0.25 });
+
+    observer.observe(artwork);
+  }
+
+  if (document.body.classList.contains("intro-finished")) {
+    startWhenVisible();
+  } else {
+    const introObserver = new MutationObserver(() => {
+      if (!document.body.classList.contains("intro-finished")) return;
+      introObserver.disconnect();
+      startWhenVisible();
+    });
+
+    introObserver.observe(document.body, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+  }
+});
+document.addEventListener("DOMContentLoaded", () => {
+  const stage = document.querySelector("#home .hero-artwork-stage");
+  const monitor = stage?.querySelector(".hero-monitor-trigger");
+
+  monitor?.addEventListener("click", () => {
+    const complete = stage.classList.toggle("is-monitor-complete");
+    monitor.setAttribute("aria-pressed", String(complete));
   });
 
-  window.addEventListener("resize", updateNavbar);
-  window.addEventListener("load", updateNavbar);
+});
 
-  updateNavbar();
-})();
+/* About chapter wheel */
+document.addEventListener("DOMContentLoaded", () => {
+  const chapters = [
+    {
+      title: "Who We Are",
+      content: [
+        ["Genesis Collaboration", "Google Genesis Club is a student-led developer initiative dedicated to fostering a culture of innovation and technical excellence. As a community of aspiring engineers and tech enthusiasts, we serve as a bridge between foundational knowledge and cutting-edge industry standards."],
+        ["Our Goal", "Our goal is to create a space where curiosity meets capability, empowering students to take charge of their professional journey and develop the confidence to lead in the digital age."],
 
-/* THINKATHON TICKET: fast, accessible modal */
-(() => {
- const dialog=document.getElementById('ggcThinkathonDialog');
- const open=document.getElementById('ggcThinkathonOpen');
- const close=document.getElementById('ggcThinkathonClose');
- if(!dialog||!open||!close)return;
- open.addEventListener('click',()=>{
-   // Load real Instagram embeds on demand, only when the event is opened.
-   dialog.querySelectorAll('iframe[data-instagram-src]').forEach(frame=>{
-     if(!frame.src)frame.src=frame.dataset.instagramSrc;
-   });
-   if(!dialog.open)dialog.showModal();
-   window.ggcLenis?.stop();
- });
- close.addEventListener('click',()=>dialog.close());
- dialog.addEventListener('click',e=>{if(e.target===dialog)dialog.close();});
- // Keep the dialog scrollable even when the page uses a smooth-scroll library.
- // Capture wheel input over the iframe cards, which otherwise consume wheel events.
- dialog.addEventListener('wheel', event => {
-   if (!dialog.open || event.ctrlKey) return;
-   const maxScroll = dialog.scrollHeight - dialog.clientHeight;
-   if (maxScroll <= 0) return;
-   event.preventDefault();
-   dialog.scrollTop += event.deltaY * (event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? dialog.clientHeight : 1);
- }, { passive: false });
- dialog.addEventListener('close',()=>window.ggcLenis?.start());
-})();
+      ],
+    },
+    {
+      title: "The Foundations",
+      content: [
+        ["Innovation", "Pushing limits with cutting-edge tech."],
+        ["Community", "A home for every developer."],
+        ["Learning", "Knowledge sharing is our core."],
+        ["Excellence", "Quality in every single line of code."],
+      ],
+    },
+    {
+      title: "Our Committee",
+      content: [
+        ["26+", "Community of dedicated members"],
+        ["200+", "Students influenced & empowered"],
+        ["2+", "Chapters established across our college"],
+      ],
+    },
+    {
+      title: "Our Purpose",
+      content: [
+        ["Skill Empowerment", "To provide students with hands-on exposure to emerging technologies and industry-standard tools through expert-led sessions."],
+        ["Bridging the Gap", 'To align academic learning with practical industry requirements, ensuring members are "day-one" ready for their careers.'],
+        ["Actionable Innovation", 'To transform theoretical knowledge into tangible solutions by encouraging a "build-first" mindset.'],
+        ["Competitive Excellence", "To foster growth through high-stakes hackathons and challenges that test logic, creativity, and technical stamina."],
+        ["Community Building", "To create a collaborative ecosystem where developers can share knowledge, find mentors, and work together on future-defining ideas."],
+      ],
+    },
+    {
+      title: "Mission & Vision",
+      content: [
+        ["Mission · Empowering the Minds", "To democratize access to cutting-edge technology and foster a culture of perpetual innovation within the student community."],
+        ["Vision · A World Built Differently", "To lead the transformation of young developers into global tech leaders who solve complex challenges using Google's ecosystem."],
+      ],
+    },
+  ];
 
-/* Creative portfolio: accessible scroll-reveal for new sections */
-(() => {
- const nodes=document.querySelectorAll('.ggc-team-tile,.ggc-portfolio-join h2');
- if(!('IntersectionObserver' in window)||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
- const observer=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('ggc-in-view');observer.unobserve(e.target)}}),{threshold:.15});
- nodes.forEach((n,i)=>{n.classList.add('ggc-animate-in');n.style.setProperty('--ggc-delay',`${(i%3)*110}ms`);observer.observe(n)});
-})();
+  const strip = document.querySelector("#about .about-chapter-strip");
+  const content = document.querySelector("#about .about-chapter-content");
+  if (!strip || !content) return;
 
-/* GGC Events — category/year filters and Thinkathon summary arrow */
-(() => {
-  const section=document.querySelector('#events.ggc-events-redesign');
-  if(!section)return;
-  const filters=[...section.querySelectorAll('[data-event-filter]')];
-  const years=[...section.querySelectorAll('[data-event-year]')];
-  const cards=[...section.querySelectorAll('[data-event-kind]')];
-  const empty=section.querySelector('.ggc-events-empty');
-  let category='all',year='all';
-  function update(){
-    let visible=0;
-    cards.forEach(card=>{
-      const show=(category==='all'||card.dataset.eventKind===category)
-        &&(year==='all'||card.dataset.eventYear===year);
-      card.hidden=!show;
-      if(show)visible++;
-    });
-    empty.hidden=visible>0;
+  const accents = ["#185abc", "#c5221f", "#137333", "#8a5900", "#185abc"];
+
+  function element(tag, text) {
+    const node = document.createElement(tag);
+    node.textContent = text;
+    return node;
   }
-  filters.forEach(button=>button.addEventListener('click',()=>{
-    category=button.dataset.eventFilter;
-    filters.forEach(b=>{b.classList.toggle('active',b===button);b.setAttribute('aria-pressed',String(b===button));});
-    update();
-  }));
-  years.forEach(button=>button.addEventListener('click',()=>{
-    year=button.dataset.eventYear;
-    years.forEach(b=>{b.classList.toggle('active',b===button);b.setAttribute('aria-pressed',String(b===button));});
-    update();
-  }));
-  section.querySelector('.ggc-think-feature-arrow')?.addEventListener('click',()=>document.getElementById('ggcThinkathonOpen')?.click());
-  update();
-})();
 
+  const buttons = chapters.map((chapter, index) => {
+    const button = element("button", "");
+    button.type = "button";
+    button.className = "about-chapter-panel";
+    button.dataset.chapter = String(index + 1);
+    button.style.setProperty("--chapter-accent", accents[index]);
+    button.setAttribute("aria-label", chapter.title);
+    button.setAttribute("aria-controls", "about-chapter-content");
 
-// Hide the vertical dock while the final Connect section is on screen; keep the top navigation visible.
-(() => {
-  const footer = document.querySelector('#join.ggc-connect-footer');
-  if (!footer) return;
-  const update = () => {
-    const r = footer.getBoundingClientRect();
-    document.body.classList.toggle('ggc-footer-visible', r.top < window.innerHeight && r.bottom > 0);
+    const number = element("span", String(index + 1).padStart(2, "0"));
+    number.className = "about-chapter-number";
+    number.setAttribute("aria-hidden", "true");
+
+    const title = element("span", chapter.title);
+    title.className = "about-chapter-label";
+
+    button.append(number, title);
+    button.addEventListener("click", () => selectChapter(index));
+    strip.append(button);
+    return button;
+  });
+
+  function selectChapter(index) {
+    const previousChapter = buttons.findIndex(
+  (button) => button.getAttribute("aria-pressed") === "true"
+);
+    buttons.forEach((button, position) => {
+      button.setAttribute("aria-pressed", String(position === index));
+    });
+
+    const chapter = chapters[index];
+    const heading = element("h3", chapter.title);
+    const details = document.createElement("div");
+    details.className = "about-chapter-details";
+
+    for (const [title, copy] of chapter.content) {
+      const item = document.createElement("div");
+      item.append(element("h4", title));
+      if (copy) item.append(element("p", copy));
+      details.append(item);
+    }
+
+    content.style.setProperty("--chapter-accent", accents[index]);
+    content.replaceChildren(heading, details);
+    if (
+  previousChapter !== -1 &&
+  previousChapter !== index &&
+  !window.matchMedia("(prefers-reduced-motion: reduce)").matches
+) {
+  const offset = index > previousChapter ? 14 : -14;
+
+  for (const part of [heading, details]) {
+    part.animate(
+      [
+        { transform: `translateX(${offset}px)`, opacity: 0.65 },
+        { transform: "translateX(0)", opacity: 1 },
+      ],
+      {
+        duration: 360,
+        easing: "cubic-bezier(.25, 1, .35, 1)",
+      }
+    );
+  }
+}
+  }
+function moveChapter(direction) {
+  const current = buttons.findIndex(
+    button => button.getAttribute("aria-pressed") === "true"
+  );
+
+  if (current < 0 || buttons.length < 2) return;
+
+  const next = (current + direction + buttons.length) % buttons.length;
+  selectChapter(next);
+}
+
+document.querySelector("#about .about-chapter-prev")
+  ?.addEventListener("click", () => moveChapter(-1));
+
+document.querySelector("#about .about-chapter-next")
+  ?.addEventListener("click", () => moveChapter(1));
+  selectChapter(0);
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+  const panel = document.querySelector(
+    '#about .about-chapter-panel[data-chapter="1"]'
+  );
+  if (!panel) return;
+
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const width = 1672;
+  const height = 941;
+
+  const artwork = new Image();
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  canvas.className = "who-we-are-motion";
+  canvas.setAttribute("aria-hidden", "true");
+
+  const ctx = canvas.getContext("2d");
+  const source = document.createElement("canvas");
+  source.width = width;
+  source.height = height;
+  const sourceCtx = source.getContext("2d");
+  if (!ctx || !sourceCtx) return;
+
+  let original;
+  let frame = null;
+  let previousFrame = -Infinity;
+
+  // Coordinates match the transparent illustration with the GGC laptop logo.
+  const people = [
+    { head: [546, 299, 109, 91], eyes: [[575, 293], [615, 305]] },
+    { head: [819, 394, 119, 123], eyes: [[815, 405], [865, 411]], pivot: [814, 493] },
+    { head: [1074, 235, 132, 124], eyes: [[1047, 271], [1095, 250]], pivot: [1122, 310] },
+  ];
+
+  function influence(x, y, cx, cy, rx, ry) {
+    const distance = ((x - cx) / rx) ** 2 + ((y - cy) / ry) ** 2;
+    return Math.max(0, 1 - distance) ** 2;
+  }
+
+  // A quick movement followed by a short rest.
+  function pulse(time, period, duration, offset = 0) {
+    const phase = (time + offset) % period;
+    return phase < duration ? Math.sin(Math.PI * phase / duration) : 0;
+  }
+
+  // Redraw a small patch from the original art with feathered edges.
+  function patch(cx, cy, rx, ry, mapPixel) {
+    const left = Math.max(0, Math.floor(cx - rx));
+    const top = Math.max(0, Math.floor(cy - ry));
+    const right = Math.min(width, Math.ceil(cx + rx));
+    const bottom = Math.min(height, Math.ceil(cy + ry));
+    const patchWidth = right - left;
+    const patchHeight = bottom - top;
+    const pixels = ctx.createImageData(patchWidth, patchHeight);
+
+    let target = 0;
+    for (let y = top; y < bottom; y++) {
+      for (let x = left; x < right; x++) {
+        const [sx, sy] = mapPixel(x, y);
+        const ix = Math.max(0, Math.min(width - 1, Math.round(sx)));
+        const iy = Math.max(0, Math.min(height - 1, Math.round(sy)));
+        const sample = (iy * width + ix) * 4;
+
+        pixels.data[target++] = original[sample];
+        pixels.data[target++] = original[sample + 1];
+        pixels.data[target++] = original[sample + 2];
+        pixels.data[target++] = original[sample + 3];
+      }
+    }
+
+    ctx.putImageData(pixels, left, top);
+  }
+
+  function drawHead(person, index, time) {
+    const [cx, cy, rx, ry] = person.head;
+    const blink = pulse(time, 1.7, 0.2, index * 0.48);
+    const nod = person.pivot
+      ? pulse(time, 2.2, 0.65, index * 0.51) * 0.055
+      : 0;
+    const speech = index === 0 && time % 1.8 < 1.05
+      ? (1 + Math.sin(time * 35)) / 2
+      : 0;
+
+    if (!blink && !nod && !speech) return;
+
+    patch(cx, cy, rx, ry, (x, y) => {
+      let sx = x;
+      let sy = y;
+
+      if (nod) {
+        const [px, py] = person.pivot;
+        const angle = -nod * influence(x, y, cx, cy, rx, ry);
+        sx = px + (x - px) * Math.cos(angle) - (y - py) * Math.sin(angle);
+        sy = py + (x - px) * Math.sin(angle) + (y - py) * Math.cos(angle);
+      }
+
+      for (const [ex, ey] of person.eyes) {
+        sy += (sy - ey) * blink * 3 *
+          influence(sx, sy, ex, ey, 10, 13);
+      }
+
+      if (speech) {
+        sy -= speech * 3.5 * influence(sx, sy, 574, 339, 24, 14);
+      }
+
+      return [sx, sy];
+    });
+  }
+
+  function drawSteam(time) {
+    ctx.save();
+    ctx.strokeStyle = "#7a8696";
+    ctx.lineWidth = 2.5;
+    ctx.lineCap = "round";
+
+    for (let i = 0; i < 3; i++) {
+      const progress = (time / 1.55 + i / 3) % 1;
+      const x = 1322 + (i - 1) * 12 + Math.sin(progress * Math.PI * 2) * 5;
+      const y = 682 - progress * 60;
+
+      ctx.globalAlpha = Math.sin(progress * Math.PI) * 0.5;
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.bezierCurveTo(x - 10, y - 9, x + 10, y - 16, x + 2, y - 26);
+      ctx.stroke();
+    }
+
+    ctx.restore();
+  }
+
+  function render(now) {
+    const time = now / 1000;
+    ctx.clearRect(0, 0, width, height);
+    ctx.drawImage(source, 0, 0);
+
+    const typing = pulse(time, 0.38, 0.22) * 4;
+    patch(775, 726, 47, 43, (x, y) => [
+      x,
+      y - typing * influence(x, y, 775, 726, 47, 43),
+    ]);
+
+    const gesture = pulse(time, 1.8, 0.85) * 5;
+    patch(622, 551, 88, 45, (x, y) => [
+      x + gesture * 0.5 * influence(x, y, 622, 551, 88, 45),
+      y - gesture * influence(x, y, 622, 551, 88, 45),
+    ]);
+
+    people.forEach((person, index) => drawHead(person, index, time));
+    drawSteam(time);
+  }
+
+  function shouldPlay() {
+    return original &&
+      panel.getAttribute("aria-pressed") === "true" &&
+      !reducedMotion.matches &&
+      !document.hidden;
+  }
+
+  function animate(now) {
+    frame = null;
+    if (!shouldPlay()) return;
+
+    if (now - previousFrame >= 1000 / 24) {
+      render(now);
+      previousFrame = now;
+    }
+
+    frame = requestAnimationFrame(animate);
+  }
+
+  function syncAnimation() {
+    if (shouldPlay()) {
+      if (frame === null) {
+        render(performance.now());
+        panel.classList.add("has-chapter-motion");
+        frame = requestAnimationFrame(animate);
+      }
+    } else {
+      if (frame !== null) cancelAnimationFrame(frame);
+      frame = null;
+      panel.classList.remove("has-chapter-motion");
+    }
+  }
+
+  artwork.addEventListener("load", () => {
+    sourceCtx.drawImage(artwork, 0, 0, width, height);
+
+    try {
+      original = sourceCtx.getImageData(0, 0, width, height).data;
+    } catch {
+      return; // Keep the static PNG if pixel access is unavailable.
+    }
+
+    panel.prepend(canvas);
+    syncAnimation();
+  });
+
+  new MutationObserver(syncAnimation).observe(panel, {
+    attributes: true,
+    attributeFilter: ["aria-pressed"],
+  });
+  reducedMotion.addEventListener("change", syncAnimation);
+  document.addEventListener("visibilitychange", syncAnimation);
+
+  artwork.src = "assets/who-we-are.png";
+});
+document.addEventListener("DOMContentLoaded", () => {
+  const chapterEffects = {
+    // 02 · The Foundations — bulb, blue wire, puzzle, checkmark
+    2: `
+      <circle class="chapter-glow" cx="388" cy="395" r="43"
+              fill="#ffce45"/>
+
+      <path class="chapter-signal" pathLength="100"
+            d="M234 520 C232 419 316 406 330 478"
+            stroke="#b9dbff" style="--delay: -.25s"/>
+
+      <path class="chapter-spark" fill="none"
+            d="M699 351 L701 392 M653 369 L678 403 M740 373 L725 405"
+            stroke="#ea4335" style="--delay: -.65s"/>
+
+      <path class="chapter-signal" pathLength="100"
+            d="M1348 624 L1376 648 L1444 578"
+            stroke="#b6ffd2" style="--delay: -.9s"/>
+    `,
+
+    // 03 · Our Committee — calendar, org chart, blue tab, lanyard
+    3: `
+      <path class="chapter-glow"
+            d="M515 520 L559 512 L571 555 L527 566 Z"
+            fill="#b7dbff"/>
+
+      <path class="chapter-signal" pathLength="100"
+            d="M935 368 L922 416 L1023 420 L1017 453"
+            stroke="#4285f4" style="--delay: -.25s"/>
+
+      <path class="chapter-glow"
+            d="M1176 301 Q1220 286 1252 302 L1244 339
+               Q1211 329 1168 346 Z"
+            fill="#a8d8ff" style="--delay: -.6s"/>
+
+      <path class="chapter-signal" pathLength="100"
+            d="M1027 605 Q1125 571 1227 551 Q1359 511 1436 547"
+            stroke="#ffd2cd" style="--delay: -.85s"/>
+    `,
+
+    // 04 · Our Purpose — star, orbit, telescope lens, bookmark
+    4: `
+      <path class="chapter-spark"
+            d="M1144 147 Q1149 171 1172 177
+               Q1149 184 1144 207 Q1138 185 1115 177
+               Q1138 172 1144 147 Z"
+            fill="#ffe69d" stroke="#fbbc05"/>
+
+      <path class="chapter-signal" pathLength="100"
+            d="M328 530 C570 338 827 207 1096 179"
+            stroke="#aee9b9" style="--delay: -.3s"/>
+
+      <ellipse class="chapter-glow" cx="1357" cy="280" rx="15" ry="26"
+               transform="rotate(-28 1357 280)"
+               fill="#c5dbff" style="--delay: -.65s"/>
+
+      <path class="chapter-signal" pathLength="100"
+            d="M888 674 L917 754 L927 736 L945 746"
+            stroke="#a1ccff" style="--delay: -.95s"/>
+    `,
+
+    // 05 · Mission & Vision — LED, red wire, notebook, target
+    5: `
+      <circle class="chapter-glow" cx="433" cy="352" r="45"
+              fill="#ffce45"/>
+
+      <path class="chapter-signal" pathLength="100"
+            d="M482 470 C474 360 573 341 591 492"
+            stroke="#ffc0b6" style="--delay: -.2s"/>
+
+      <circle class="chapter-glow" cx="1258" cy="244" r="24"
+              fill="#fbbc05" style="--delay: -.55s"/>
+
+      <circle class="chapter-ripple" cx="1078" cy="710" r="26"
+              fill="none" stroke="#34a853" style="--delay: -.8s"/>
+    `
   };
-  window.addEventListener('scroll', update, {passive:true});
-  window.addEventListener('resize', update, {passive:true});
-  window.addEventListener('pageshow', update);
-  update();
-})();
+
+  for (const [chapter, drawing] of Object.entries(chapterEffects)) {
+    const panel = document.querySelector(
+      `#about .about-chapter-panel[data-chapter="${chapter}"]`
+    );
+
+    if (!panel || panel.querySelector(".chapter-art-effects")) continue;
+
+    const overlay = document.createElementNS(
+      "http://www.w3.org/2000/svg",
+      "svg"
+    );
+    overlay.setAttribute("class", "chapter-art-effects");
+    overlay.setAttribute("viewBox", "0 0 1672 941");
+    overlay.setAttribute("preserveAspectRatio", "xMidYMid slice");
+    overlay.setAttribute("aria-hidden", "true");
+    overlay.innerHTML = drawing;
+    panel.prepend(overlay);
+  }
+});
+document.addEventListener("DOMContentLoaded", () => {
+  const section = document.querySelector(".ggc-events");
+  const grid = section?.querySelector(".ggc-event-grid");
+  const featureSlot = section?.querySelector(".ggc-event-feature-slot");
+  const dialog = section?.querySelector(".ggc-event-dialog");
+  if (!grid || !dialog || !featureSlot) return;
+
+  const workshops = section.querySelector(".ggc-workshops");
+  const empty = section.querySelector(".ggc-events-empty");
+  const filters = [...section.querySelectorAll("[data-event-filter]")];
+
+  for (const filter of filters) {
+    filter.addEventListener("click", () => {
+      const upcoming = filter.dataset.eventFilter === "upcoming";
+      for (const button of filters) {
+        button.setAttribute("aria-pressed", String(button === filter));
+      }
+      featureSlot.hidden = upcoming;
+      if (workshops) workshops.hidden = upcoming;
+      if (empty) empty.hidden = !upcoming;
+    });
+  }
+
+  const events = [
+    {
+      title: "Prompt Engineering with Gemini",
+      category: "Workshop",
+      date: "22 September 2025",
+      venue: "Data Science Lab",
+      description: "A hands-on introduction to writing and refining prompts with Gemini. The workshop covered role prompting, step-by-step reasoning, and formatting outputs. Students practiced improving responses through iterative prompting.",
+      extra: [["Registration", "Free"], ["Certificates", "E-certificates offered"]],
+      image: "assets/gemini-workshop.png",
+      instagram: "https://www.instagram.com/reel/DPJLCefEhqh/",
+      colors: ["#185abc", "#e8f0fe", "#adc9fc"]
+    },
+    {
+      title: "Machine Learning Essentials",
+      category: "Workshop",
+      date: "15 December 2025",
+      venue: "Data Science Lab",
+      description: "An introductory workshop on machine learning theory and practical implementation. It covered exploratory data analysis, supervised and unsupervised models, evaluation, and deployment, with hands-on practice.",
+      extra: [["Certificates", "Offered"]],
+      image: "assets/machine-learning.png",
+      instagram: "https://www.instagram.com/p/DSTpW6GEnzh/",
+      colors: ["#c5221f", "#fce8e6", "#f3b3ae"]
+    },
+    {
+      title: "SOC Operations Workshop",
+      category: "Workshop",
+      date: "27 August 2026",
+      venue: "Data Science Lab",
+      description: "A student skills workshop introducing Security Operations Center work. Participants explored cybersecurity careers through SOC job simulations, security alert investigations, and demonstrations of security tools.",
+      extra: [["Speakers", "Kaushik Srinivasan and Siva Sagar"]],
+      image: "assets/soc-workshop.png",
+      instagram: "https://www.instagram.com/p/DfoUJ85krwi/",
+      colors: ["#137333", "#e6f4ea", "#a8dab5"]
+    },
+    {
+      title: "Thinkathon 9.0",
+      featured: true,
+      category: "Ideathon",
+      date: "6 March 2026",
+      venue: "HITS Campus",
+      description: "An international-level ideathon at Hindustan Institute of Technology and Science, in association with Google. Teams of three to five could participate, including teams from different institutions.",
+      extra: [
+        ["Advertised prize pool", "₹1 lakh"],
+        ["Opportunities", "Internship opportunities for top participants"]
+      ],
+      image: "assets/thinkathon.png",
+      instagram: "https://www.instagram.com/p/DUyPk7KEhKP/?utm_source=ig_web_copy_link",
+      colors: ["#805500", "#fef3d3", "#edc96b"]
+    }
+  ];
+
+  function element(tag, text, className) {
+    const node = document.createElement(tag);
+    if (text) node.textContent = text;
+    if (className) node.className = className;
+    return node;
+  }
+
+  const embed = dialog.querySelector(".ggc-event-embed");
+  const instagramLink = dialog.querySelector(".ggc-event-instagram-link");
+  const socialPlaceholder = dialog.querySelector(".ggc-event-social-placeholder");
+
+  function openEvent(event) {
+    dialog.querySelector("h3").textContent = event.title;
+    dialog.querySelector(".ggc-event-description").textContent = event.description;
+
+    const facts = dialog.querySelector(".ggc-event-facts");
+    facts.replaceChildren();
+    for (const [label, value] of [
+      ["Date", event.date], ["Venue", event.venue], ...event.extra
+    ]) {
+      facts.append(element("dt", label), element("dd", value));
+    }
+
+    // Match direct Instagram post or reel URLs and omit tracking parameters.
+    const post = event.instagram.match(
+      /^https:\/\/(?:www\.)?instagram\.com\/(p|reel)\/([A-Za-z0-9_-]+)\/?(?:[?#].*)?$/
+    );
+
+    embed.replaceChildren();
+    embed.hidden = !post;
+    socialPlaceholder.hidden = Boolean(post);
+    instagramLink.hidden = !post;
+    instagramLink.removeAttribute("href");
+
+    if (post) {
+      const postUrl = `https://www.instagram.com/${post[1]}/${post[2]}/`;
+      instagramLink.href = postUrl;
+
+      const frame = element("iframe");
+      frame.src = `${postUrl}embed/`;
+      frame.title = `Instagram post for ${event.title}`;
+      embed.append(frame);
+    }
+
+    if (!dialog.open) dialog.showModal();
+  }
+
+  dialog.addEventListener("close", () => embed.replaceChildren());
+
+  for (const event of events) {
+  const card = element("article", "", "ggc-event-card");
+  const [accent, tint, border] = event.colors;
+
+  card.style.setProperty("--event-accent", accent);
+  card.style.setProperty("--event-tint", tint);
+  card.style.setProperty("--event-border", border);
+  card.classList.toggle("ggc-event-featured", Boolean(event.featured));
+
+  const poster = element("div", "", "ggc-event-poster");
+
+  if (event.image) {
+    const image = element("img");
+    image.src = event.image;
+    image.alt = "";
+    image.loading = "lazy";
+    poster.append(image);
+  } else {
+    poster.classList.add("ggc-event-poster-placeholder");
+    poster.textContent = "Event illustration coming soon";
+  }
+
+  const copy = element("div", "", "ggc-event-card-copy");
+  const category = element("span", event.category, "ggc-event-category");
+  const title = element(event.featured ? "h3" : "h4", event.title, "ggc-event-card-title");
+  const meta = element("p", "", "ggc-event-card-meta");
+
+function addMeta(icon, text) {
+  const item = element("span", "", "ggc-event-meta-item");
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("viewBox", "0 0 24 24");
+  svg.setAttribute("aria-hidden", "true");
+  svg.setAttribute("focusable", "false");
+
+  const path = document.createElementNS(svg.namespaceURI, "path");
+  path.setAttribute("d", icon);
+  svg.append(path);
+  item.append(svg, element("span", text));
+  meta.append(item);
+}
+
+addMeta(
+  "M5 5h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2ZM7 3v4m10-4v4M3 10h18",
+  event.date
+);
+
+if (event.featured) {
+  addMeta(
+    "M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Zm-5 0a3 3 0 1 0-6 0 3 3 0 0 0 6 0Z",
+    event.venue
+  );
+}
+
+  const button = element("button", "Explore more ", "ggc-event-explore");
+  button.type = "button";
+  button.setAttribute("aria-label", `Explore more about ${event.title}`);
+  button.setAttribute("aria-haspopup", "dialog");
+  button.addEventListener("click", () => openEvent(event));
+
+  copy.append(category, title, meta);
+
+  if (event.featured) {
+    copy.append(element(
+      "p",
+      "An international ideathon where student teams turn ideas into practical solutions.",
+      "ggc-event-feature-summary"
+    ));
+  }
+
+  copy.append(button);
+
+  if (event.featured) {
+    card.append(copy, poster);
+    featureSlot.append(card);
+  } else {
+    card.append(poster, copy);
+    grid.append(card);
+  }
+}
+});
