@@ -1,231 +1,42 @@
-# 🌐 Google Genesis Club — Official Website
+Google Genesis Club | HITS
 
-<div align="center">
+Live demo
+https://mouryatanusri.github.io/GGC-Website/
 
-### 🚀 Learn. Build. Innovate.
+Project overview
 
-**Empowering the Next Generation of Technology Leaders**
+A responsive website for Google Genesis Club, a student-led technical community at Hindustan Institute of Technology and Science. The site introduces the club, showcases its workshops and ideathons, and gives students a way to connect with the team.
 
-A creative, interactive, and responsive website built for the **Google Genesis Club (GGC)** at **Hindustan Institute of Technology & Science**.
+My role
 
-*Where innovation meets collaboration, and ideas turn into real-world experiences.*
+I designed and built the front end, created the illustrated layouts, implemented the interactive sections, and deployed the site with GitHub Pages. I tested the live site on desktop and mobile and refined the navigation, typography, spacing, and image layouts based on what I saw on each screen.
 
-[🌟 Explore Events](#-events--experiences) • [💻 Features](#-website-features) • [🤝 Join Our Community](#-connect-with-us)
+What I built
 
-</div>
+- Animated homepage illustration. I layered SVG effects over an illustration of students coding and building a circuit, so the animation scales with the artwork.
+- Interactive About section. Five illustrated chapters expand and slide as visitors select a card or use the previous and next buttons. The illustration and description update together.
+- Event showcase. Thinkathon 9.0 has a featured card alongside workshops on prompt engineering with Gemini, machine learning, and security operations. Past and Upcoming tabs organize events, and Explore more links open the related Instagram posts.
+- Responsive navigation. A color-coded desktop side dock highlights the current section and hides near the footer. On phones, a compact navigation bar sits at the top of the page and scrolls away with it.
 
----
+Technical decisions
 
-## ✨ About the Project
+- Used JavaScript to render About chapters from structured data and route card clicks and arrow buttons through the same selection logic.
+- Used CSS media queries to adapt the layout for phones, including fitting the full About illustration inside the expanded card.
+- Versioned the stylesheet URL after testing revealed that a returning mobile browser was still serving cached styles.
 
-The **Google Genesis Club Website** is a digital home for a student-driven technology community passionate about innovation, creativity, collaboration, and hands-on learning.
+Tech stack
 
-Designed with a modern, portfolio-inspired aesthetic, the website showcases the club's identity, mission, technical workshops, hackathons, and community initiatives.
+- HTML5 for page structure
+- CSS3 for responsive layouts, styling, and transitions
+- Vanilla JavaScript for navigation, event tabs, and chapter interactions
+- SVG and PNG for illustrations and animation layers
+- Git and GitHub for version control
+- GitHub Pages for hosting and deployment
 
-The goal is simple:
+Run locally
 
-> **To create a digital experience that reflects the creativity, technical expertise, and collaborative spirit of Google Genesis Club.**
+Clone the repository and open index.html in your browser. No package installation or build step is required.
 
-This website goes beyond traditional club pages by combining expressive design, smooth interactions, and engaging event presentations.
+Deployment
 
----
-
-## 🎨 Design Philosophy
-
-### Playful Engineering. Serious Creativity.
-
-The website follows a modern, creative design language inspired by contemporary digital portfolios.
-
-- 🎨 **Google-inspired colour palette** — Blue, Red, Yellow, and Green
-- 🧊 **Glassmorphism** — Soft translucent elements and floating navigation
-- ✨ **Micro-interactions** — Smooth hover effects and subtle animations
-- 🧩 **Creative layouts** — Visually engaging sections and event cards
-- 📱 **Responsive design** — Layouts adapted for desktop and mobile
-- 🖼️ **Visual storytelling** — Event imagery, club photographs, and Instagram content
-
-Every section is designed to make exploring the club feel intuitive, engaging, and memorable.
-
----
-
-## 💻 Website Features
-
-### 🏠 Home
-
-An introduction to Google Genesis Club featuring:
-
-- A bold, colourful club identity
-- An illustrated technology-themed background
-- The club's mission and tagline
-- Floating navigation elements
-- Smooth visual transitions
-
-### 🌟 About Us
-
-An expressive, Google-coloured section presenting:
-
-- **About Us** — Who we are and what we do
-- **Our Mission** — Connecting classroom learning with practical technology
-- **Our Vision** — Building a community of future technology leaders
-- **Learn. Build. Innovate.** — Our approach to collaborative learning
-- Club photographs highlighting our community
-
-### 📅 Events & Experiences
-
-An interactive event showcase featuring:
-
-- Category filters for workshops and hackathons
-- Year-based event filtering
-- Creative event cards with blended Google-inspired colours
-- Detailed event information
-- Instagram post and Reel integrations
-- Interactive event exploration
-
-### 👥 Team
-
-A dedicated space highlighting the people behind Google Genesis Club and the collaborative spirit that drives our initiatives.
-
-### 🤝 Join Us
-
-A community and recruitment section featuring:
-
-- Information about joining GGC
-- Recruitment application entry point
-- Recruitment availability status
-- Official community and social media links
-
-*Recruitment applications are currently closed.*
-
----
-
-## 🚀 Events & Experiences
-
-### 🧠 Machine Learning Essentials
-
-**25 November 2025**
-
-An interactive technical session exploring machine learning fundamentals, data analysis, model evaluation, and hands-on deployment.
-
-### 🔐 SOC Operations Workshop
-
-**27 August 2026**
-
-A cybersecurity-focused workshop introducing Security Operations Center workflows, security monitoring, threat investigation, and practical security tools.
-
-### ✨ Prompt Engineering with Gemini
-
-**10 December 2025**
-
-A hands-on session exploring prompt engineering techniques and effective ways to work with Google's Gemini AI.
-
-### 🏆 Thinkathon 9.0
-
-**6 March 2026**
-
-A hackathon bringing together innovative minds to solve real-world challenges through creativity, collaboration, and technology.
-
-**Prize Pool:** ₹1,00,000
-
-**Venue:** HITS Campus
-
----
-
-## 🛠️ Technologies Used
-
-| Technology | Purpose |
-|---|---|
-| HTML5 | Website structure |
-| CSS3 | Styling, responsive layouts, and animations |
-| JavaScript | Interactions, navigation, and event filtering |
-| Instagram Embeds | Event posts and Reel showcases |
-| Git & GitHub | Version control and project hosting |
-
----
-
-## 📂 Project Structure
-
-The website is organized around its core HTML, CSS, JavaScript, and image assets.
-
-```text
-GGC-Website/
-│
-├── index.html
-├── assets/
-│   └── Images and other website assets
-│
-├── CSS and JavaScript files
-│
-└── README.md
-```
-
-*The exact folder structure may vary depending on the current version of the project.*
-
----
-
-## ⚙️ Getting Started
-
-To run the website locally:
-
-**1. Clone the repository**
-
-```bash
-git clone https://github.com/mouryatanusri/GGC-Website.git
-```
-
-**2. Navigate to the project directory**
-
-```bash
-cd GGC-Website
-```
-
-**3. Launch the website**
-
-Open `index.html` in your browser.
-
-For a smoother development experience, you can also use the **Live Server** extension in Visual Studio Code.
-
-No backend setup is required for the static website.
-
----
-
-## 🎯 Our Mission
-
-To bridge the gap between classroom learning and real-world technology by empowering students with practical skills, creative thinking, and meaningful opportunities.
-
-## 🌱 Our Vision
-
-To build a thriving community of innovators, developers, and future technology leaders who collaborate, inspire one another, and create a positive impact.
-
----
-
-## 📬 Connect With Us
-
-Stay connected with Google Genesis Club!
-
-- 📸 **Instagram:** [@ggc_hits](https://www.instagram.com/ggc_hits/)
-- 💼 **LinkedIn:** [Google Genesis Club](https://www.linkedin.com/company/google-genesis-club/home/)
-- 💬 **WhatsApp:** [Join Our Community](https://chat.whatsapp.com/K6gWAzH45Ej1cENGG0IDPZ)
-- 📧 **Email:** [genesisclub.ggc@gmail.com](mailto:genesisclub.ggc@gmail.com)
-
----
-
-## 🏫 Affiliation
-
-**Google Genesis Club**
-
-Hindustan Institute of Technology & Science (HITS)
-
-Chennai, Tamil Nadu, India
-
----
-
-<div align="center">
-
-### 💙 ❤️ 💛 💚
-
-**Built with creativity, curiosity, and collaboration.**
-
-*Learn. Build. Innovate.*
-
-**© Google Genesis Club.**
-
-</div>
+GitHub Pages publishes the site from the main branch. Push changes to main and check the Actions tab for deployment status.
