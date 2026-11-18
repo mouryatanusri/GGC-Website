@@ -1,42 +1,54 @@
-Google Genesis Club | HITS
+# Google Genesis Club | HITS
 
-Live demo
-https://mouryatanusri.github.io/GGC-Website/
+**A responsive, illustrated website for the Google Genesis Club at Hindustan Institute of Technology and Science.**
 
-Project overview
+[Visit the live website](https://mouryatanusri.github.io/GGC-Website/) · [View the source code](https://github.com/mouryatanusri/GGC-Website)
 
-A responsive website for Google Genesis Club, a student-led technical community at Hindustan Institute of Technology and Science. The site introduces the club, showcases its workshops and ideathons, and gives students a way to connect with the team.
+## Project Overview
 
-My role
+Google Genesis Club is a student-led technical community. The website introduces the club and its team, showcases workshops and ideathons, and helps students find ways to get involved.
 
-I designed and built the front end, created the illustrated layouts, implemented the interactive sections, and deployed the site with GitHub Pages. I tested the live site on desktop and mobile and refined the navigation, typography, spacing, and image layouts based on what I saw on each screen.
+## My Role
 
-What I built
+I designed the interface, built the front end, integrated the illustrations and animations, and deployed the site on GitHub Pages. I tested the deployed site on desktop and mobile, then refined the navigation, typography, spacing, and image framing across screen sizes.
 
-- Animated homepage illustration. I layered SVG effects over an illustration of students coding and building a circuit, so the animation scales with the artwork.
-- Interactive About section. Five illustrated chapters expand and slide as visitors select a card or use the previous and next buttons. The illustration and description update together.
-- Event showcase. Thinkathon 9.0 has a featured card alongside workshops on prompt engineering with Gemini, machine learning, and security operations. Past and Upcoming tabs organize events, and Explore more links open the related Instagram posts.
-- Responsive navigation. A color-coded desktop side dock highlights the current section and hides near the footer. On phones, a compact navigation bar sits at the top of the page and scrolls away with it.
+## Key Features
 
-Technical decisions
+- **Animated homepage illustration.** SVG effects are layered over an illustration of students coding and building a circuit. The effects scale alongside the artwork.
+- **Interactive About section.** Five illustrated chapters expand as visitors select a panel or use the previous and next buttons. The card and its description update together.
+- **Event showcase.** Thinkathon 9.0 has a featured layout alongside workshops on prompt engineering with Gemini, machine learning, and security operations. Past and Upcoming tabs organize the listings, and event links lead to the club’s Instagram posts.
+- **Responsive navigation.** A color-coded desktop side dock highlights the active section and hides near the footer. On mobile, a compact navigation bar sits at the top and scrolls away with the page.
 
-- Used JavaScript to render About chapters from structured data and route card clicks and arrow buttons through the same selection logic.
-- Used CSS media queries to adapt the layout for phones, including fitting the full About illustration inside the expanded card.
-- Versioned the stylesheet URL after testing revealed that a returning mobile browser was still serving cached styles.
+## Technical Decisions
 
-Tech stack
+- **Shared chapter controls.** Panel clicks and previous/next buttons call the same JavaScript selection function, keeping the active card and its description in sync.
+- **Mobile image framing.** I widened the expanded About card and adjusted how the artwork fits so visitors can see the full illustration on narrower screens.
+- **Stylesheet cache versioning.** A regular mobile tab was showing older styles while a private tab showed the update. I versioned the stylesheet URL so returning browsers would fetch the updated CSS.
 
-- HTML5 for page structure
-- CSS3 for responsive layouts, styling, and transitions
-- Vanilla JavaScript for navigation, event tabs, and chapter interactions
-- SVG and PNG for illustrations and animation layers
-- Git and GitHub for version control
-- GitHub Pages for hosting and deployment
+## Tech Stack
 
-Run locally
+| Technology | How it’s used |
+| --- | --- |
+| HTML5 | Page structure and content |
+| CSS3 | Responsive layouts, styling, and transitions |
+| Vanilla JavaScript | Navigation state, About chapter controls, and event filtering |
+| SVG and PNG | Animation layers and illustrations |
+| Git and GitHub | Version control and source hosting |
+| GitHub Pages | Website hosting and deployment |
 
-Clone the repository and open index.html in your browser. No package installation or build step is required.
+## Architecture
 
-Deployment
+This is a **static front-end website**. GitHub Pages serves the HTML, CSS, JavaScript, and images, and interactions run in the visitor’s browser. The project requires no custom backend, database, package installation, or build step.
 
-GitHub Pages publishes the site from the main branch. Push changes to main and check the Actions tab for deployment status.
+## Run Locally
+
+```bash
+git clone https://github.com/mouryatanusri/GGC-Website.git
+cd GGC-Website
+```
+
+Open `index.html` in your browser.
+
+## Deployment
+
+GitHub Pages publishes the site from the root of the `main` branch. Pushing changes to `main` triggers a deployment. Check the repository’s **Actions** tab for its status.
